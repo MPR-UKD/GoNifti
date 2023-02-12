@@ -58,3 +58,7 @@ def dicom_to_nifti(folder: Path, verbose: bool = False) -> nib.Nifti1Image:
     nifti_img = nib.Nifti1Image(image_data, affine, header)
 
     return nifti_img
+
+
+def save_nifti(nifti_img: nib.Nifti1Image, filename: Path):
+    nib.save(nifti_img, str(filename))

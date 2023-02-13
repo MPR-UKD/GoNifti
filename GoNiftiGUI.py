@@ -2,7 +2,7 @@ from pathlib import Path
 import PyQt5.QtWidgets as QtWidgets
 import sys
 import ctypes
-
+import PyQt5
 from utils import find_dicom_folders, dicom_to_nifti, save_nifti
 
 

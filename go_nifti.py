@@ -40,6 +40,14 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
         self.main_layout.addWidget(self.progress_bar)
         self.main_layout.addWidget(self.convert_button)
 
+        author = QtWidgets.QLabel()
+        author.setText(
+            "Author: Karl Ludger Radke (Version 0.1) \n"
+            "last update: 12/02/2023 \n"
+            "ludger.radke@med.uni-duesseldorf.de"
+        )
+        self.main_layout.addWidget(author)
+
         self.main_widget = QtWidgets.QWidget()
         self.main_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.main_widget)

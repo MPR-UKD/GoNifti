@@ -5,6 +5,19 @@ from typing import List
 import nibabel as nib
 import numpy as np
 import pydicom
+from nibabel import Nifti1Image
+
+
+def sort_dicom_files(dicom_files: List[pydicom.Dataset]) -> List:
+    positions = {}
+    for dicom_file in dicom_files:
+        position = tuple(dicom_file.ImagePositionPatient)
+        if position in positions:
+            positions[position].append(dicom_file)
+        else:
+            positions[position] = [dicom_file]
+    sorted_positions = sorted(positions.items(), key=lambda x: x[0][2])
+    return [files for position, files in sorted_positions]
 
 
 def find_dicom_folders(root_folder: Path) -> List[Path]:
@@ -21,39 +34,37 @@ def find_dicom_folders(root_folder: Path) -> List[Path]:
     return dicom_folders
 
 
-def dicom_to_nifti(folder: Path, verbose: bool = False) -> nib.Nifti1Image:
+def dicom_to_nifti(folder: Path, verbose: bool = True) -> Nifti1Image | None:
     # Load all DICOM images in the folder
     dicom_files = [pydicom.dcmread(str(file)) for file in folder.glob('*.dcm')]
 
-    # Determine the changing parameter
-    changing_parameters = set()
-    for d in dicom_files:
-        changing_parameters |= set(d.keys())
-    changing_parameters -= set(dicom_files[0].keys())
+    if "MIMETypeOfEncapsulatedDocument" in dicom_files[0]:
+        return None
 
-    if verbose:
-        print(f"Changed parameters detected: {changing_parameters}")
-    # Use the first changing parameter found as the organizing parameter
-    organizing_parameter = list(changing_parameters)[0] if changing_parameters else None
-
-    # Organize the DICOM images based on the organizing parameter if found
-    if organizing_parameter:
-        dicom_files.sort(key=lambda x: x.get(organizing_parameter, 0))
-        if verbose:
-            print(f"Organizing parameter: {organizing_parameter}")
+    #Sort dicom files based on the image position
+    dicom_files = sort_dicom_files(dicom_files)
 
     # Convert the DICOM images to a 4D Nifti array
-    image_data = np.stack([d.pixel_array for d in dicom_files])
-    affine = dicom_files[0].affine
+    image_data = []
+    for idx in range(len(dicom_files[0])):
+        image_data.append([d[idx].pixel_array for d in dicom_files])
+
+    image_data = np.array(image_data).transpose((1,2,3,0))
+    affine = np.eye(4)
 
     header = nib.Nifti1Header()
     # Transfer DICOM header information to Nifti header
-    for key, value in dicom_files[0].items():
-        if key not in header:
-            try:
-                header[key] = value
-            except:
-                pass
+    for idx in range(len(dicom_files[0])):
+        for key, value in dicom_files[0][idx].items():
+            if key not in header:
+                try:
+                    header[key] = value
+                except:
+                    pass
+            elif header[key] != value:
+                if type(header[key]) != list:
+                    header[key] = list(header[key])
+                header[key].append(value)
 
     nifti_img = nib.Nifti1Image(image_data, affine, header)
 
@@ -61,4 +72,5 @@ def dicom_to_nifti(folder: Path, verbose: bool = False) -> nib.Nifti1Image:
 
 
 def save_nifti(nifti_img: nib.Nifti1Image, filename: Path):
+    filename.parent.mkdir(parents=True, exist_ok=True)
     nib.save(nifti_img, str(filename))

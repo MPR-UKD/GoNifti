@@ -2,6 +2,7 @@
 
 GoNifti GUI is a Python-based graphical user interface that allows users to convert DICOM images to Nifti format. This project can be considered as very helpful for radiologists or medical imaging experts who often work with DICOM images and need to convert them to another format that is better suited for further analysis or processing.
 
+![](/assets/img.png)
 ### Requirements
 - Python 3
 - PyQt5

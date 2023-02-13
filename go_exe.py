@@ -9,7 +9,7 @@ if os.path.exists(r"./dist"):
 os.system(
     "pyinstaller --collect-submodules=pydicom GoNiftiGUI.py --onedir"
 )
-shutil.make_archive("./dist/DICOMTranslator", "zip", "./dist/go_nifti")
+shutil.make_archive("./dist/GoNifti", "zip", "./dist/go_nifti")
 os.system(
     "pyinstaller --collect-submodules=pydicom GoNiftiGUI.py --onefile"
 )

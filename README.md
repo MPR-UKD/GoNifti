@@ -42,4 +42,4 @@ The script uses the functions `find_dicom_folders` and `dicom_to_nifti` from the
 This project is licensed under the GNU 3.0 license and contributions are welcome.
 
 ### Executable
-The project also includes a compiled executable version of the program in the `dist` folder, which can be used without the need for installing any dependencies or having Python installed on the system. Simply extract the contents of the `DICOMTranslator.zip` archive and run the `go_nifti.exe` file.
+The project also includes a compiled executable version of the program in the `dist` folder, which can be used without the need for installing any dependencies or having Python installed on the system. Simply extract the contents of the `GoNifti.zip` archive and run the `go_nifti.exe` file.

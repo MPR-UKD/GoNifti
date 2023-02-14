@@ -1,45 +1,70 @@
-# GoNifti GUI
+# GoNifti
+GoNifti is a Python-based tool that allows users to convert DICOM images to Nifti format, either through a graphical user interface (GUI) or a command-line interface (CLI).
 
-GoNifti GUI is a Python-based graphical user interface that allows users to convert DICOM images to Nifti format. This project can be considered as very helpful for radiologists or medical imaging experts who often work with DICOM images and need to convert them to another format that is better suited for further analysis or processing.
+## Data format
+To use GoNifti, the input data must be in a specific format: each subfolder can contain only one MR sequence and the DICOM files must have the ".dcm" file extension. If the input data does not meet these requirements, a tool such as [DicomTranslator](https://github.com/ludgerradke/DICOM_Translator) can be used to preprocess the data.
 
-![](/assets/img.png)
-### Requirements
-- Python 3
+## Requirements
+- Python 3.10
 - PyQt5
 - Nibabel
 - Numpy
 - Pydicom
+- Click
 
-### Installation
+# Installation
 1. Clone the GitHub repository to your computer
 ```bash
 git clone https://github.com/ludgerradke/GoNifti
 ```
 2. Install the required dependencies
 ```bash
-pip install PyQt5 nibabel numpy pydicom
+pip install PyQt5 nibabel numpy pydicom click
 ```
 
-### Usage
-1. Start the application by running the `GoNiftiGUI.py` script.
-````bash
+## Usage
+### GUI
+![](/assets/img.png)
+1. Start the application by running the GoNiftiGUI.py script.
+```bash
 python GoNiftiGUI.py
-````
+```
 2. Select the root folder that contains the DICOM images to be converted.
 
 3. Select the desired conversion mode:
 
-- `save_in_separate_dir:` The converted Nifti images will be saved in a separate folder that is located in the same parent folder as the root folder and has the name of the root folder with the suffix "_as_nifti".
-- `save_in_folder:` The converted Nifti images will be saved in the same folder as the DICOM images and have the name "nifti.nii.gz".
-- `save_in_exam_date:` The converted Nifti images will be saved in the same folder as the DICOM images and have the same filename extension as Nifti.
+- `save_in_separate_dir`: The converted Nifti images will be saved in a separate folder that is located in the same parent folder as the root folder and has the name of the root folder with the suffix "_as_nifti".
+- `save_in_folder`: The converted Nifti images will be saved in the same folder as the DICOM images and have the name "nifti.nii.gz".
+- `save_in_exam_date`: The converted Nifti images will be saved in the same folder as the DICOM images and have the same filename extension as Nifti.
+
 4. Click the "Convert" button.
 5. After the conversion is complete, a message will be displayed indicating that the transformation is complete.
 
-### How it works
-The script uses the functions `find_dicom_folders` and `dicom_to_nifti` from the `utils` module to find the DICOM folders and convert them to Nifti format, respectively. The `GoNiftiGUI` class creates the graphical user interface and connects the buttons to the appropriate functions. The `dicom_to_nifti` function uses the Nibabel and Pydicom libraries to perform the conversion.
+### CLI
+```bash
+$ python .\GoNifti.py --help
 
-### License
+Usage: GoNifti.py [OPTIONS] ROOT_FOLDER
+
+Options:
+  --mode [save_in_separate_dir|save_in_folder|save_in_exam_date]
+  --help                          Show this message and exit.
+```
+
+```bash
+$ python .\GoNifti.py <path>
+
+Found 161 DICOM folders.
+Converting DICOM to NIFTI  [####################################]  100%          
+Transformation completed.
+```
+
+1. Open a terminal and navigate to the project directory.
+2. Run the CLI script by using the command `python gonifti.py [ROOT_FOLDER] --mode [MODE]`, where `ROOT_FOLDER` is the path to the folder containing the DICOM images to be converted and `MODE` is the desired conversion mode (`save_in_separate_dir`, `save_in_folder`, or `save_in_exam_date`).
+3. After the conversion is complete, a message will be displayed indicating that the transformation is complete.
+
+## License
 This project is licensed under the GNU 3.0 license and contributions are welcome.
 
-### Executable
-The project also includes a compiled executable version of the program in the `dist` folder, which can be used without the need for installing any dependencies or having Python installed on the system. Simply extract the contents of the `GoNifti.zip` archive and run the `go_nifti.exe` file.
+## Executable
+The project also includes a compiled executable version of the program in the **dist** folder, which can be used without the need for installing any dependencies or having Python installed on the system.

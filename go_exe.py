@@ -9,7 +9,12 @@ if os.path.exists(r"./dist"):
 os.system(
     "pyinstaller --hidden-import=PyQt5 --collect-submodules=pydicom GoNiftiGUI.py --onedir"
 )
-shutil.make_archive("./dist/GoNifti", "zip", "./dist/go_nifti")
 os.system(
     "pyinstaller --hidden-import=PyQt5 --collect-submodules=pydicom GoNiftiGUI.py --onefile"
+)
+os.system(
+    "pyinstaller --hidden-import=PyQt5 --collect-submodules=pydicom GoNifti.py --onedir"
+)
+os.system(
+    "pyinstaller --hidden-import=PyQt5 --collect-submodules=pydicom GoNifti.py --onefile"
 )

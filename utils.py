@@ -53,6 +53,7 @@ def dicom_to_nifti(folder: Path, verbose: bool = True) -> Nifti1Image | None:
     affine = np.eye(4)
 
     header = nib.Nifti1Header()
+    header['multi_echo'] = True
     # Transfer DICOM header information to Nifti header
     for idx in range(len(dicom_files[0])):
         for key, value in dicom_files[0][idx].items():

@@ -1,12 +1,10 @@
 from pathlib import Path
 import PyQt5.QtWidgets as QtWidgets
-import sys
 import ctypes
 import os
-import PyQt5
 import sys
 import dicom2nifti
-from utils import find_dicom_folders, dicom_to_nifti, save_nifti
+from go_nifti.src.utils import find_dicom_folders
 
 
 class GoNiftiGUI(QtWidgets.QMainWindow):

@@ -1,6 +1,4 @@
-import pytest
-from pathlib import Path
-from utils import find_dicom_folders
+from go_nifti.src.utils import find_dicom_folders
 
 
 def test_find_dicom_folders(tmp_path):

@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 import dicom2nifti
 
-from utils import find_dicom_folders
+from go_nifti.src.utils import find_dicom_folders
 
 
 def validate_root_folder(ctx, param, value):

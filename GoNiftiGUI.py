@@ -85,8 +85,6 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
                 raise IndexError
             save_nifti(nifti_img, save_path)
             self.progress_bar.setValue(i + 1)
-        self.root_folder_edit.clear()
-        self.progress_bar.close()
         ctypes.windll.user32.MessageBoxW(
             0,
             f"Transformation completed",

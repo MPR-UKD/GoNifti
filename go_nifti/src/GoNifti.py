@@ -14,9 +14,6 @@ def validate_root_folder(ctx, param, value):
     return Path(value)
 
 
-@click.command()
-@click.argument('root_folder', callback=validate_root_folder)
-@click.option('--mode', default='save_in_separate_dir', type=click.Choice(['save_in_separate_dir', 'save_in_folder', 'save_in_exam_date']))
 def convert(root_folder, mode):
     dicom_folders = find_dicom_folders(root_folder)
     click.echo(f"Found {len(dicom_folders)} DICOM folders.")
@@ -49,6 +46,11 @@ def convert(root_folder, mode):
 
     click.echo("Transformation completed.")
 
+@click.command()
+@click.argument('root_folder', callback=validate_root_folder)
+@click.option('--mode', default='save_in_separate_dir', type=click.Choice(['save_in_separate_dir', 'save_in_folder', 'save_in_exam_date']))
+def cli(root_folder, mode):
+    convert(root_folder=root_folder, mode=mode)
 
 if __name__ == '__main__':
-    convert()
+    cli()

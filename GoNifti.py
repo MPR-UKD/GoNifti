@@ -1,7 +1,11 @@
-import click
-import time
+import os
+import sys
 from pathlib import Path
-from utils import find_dicom_folders, dicom_to_nifti, save_nifti
+
+import click
+import dicom2nifti
+
+from utils import find_dicom_folders
 
 
 def validate_root_folder(ctx, param, value):
@@ -18,9 +22,6 @@ def convert(root_folder, mode):
     click.echo(f"Found {len(dicom_folders)} DICOM folders.")
     with click.progressbar(dicom_folders, label="Converting DICOM to NIFTI") as bar:
         for folder in bar:
-            nifti_img = dicom_to_nifti(folder)
-            if not nifti_img:
-                continue
             if mode == 'save_in_folder':
                 save_path = folder / 'nifti.nii.gz'
             elif mode == 'save_in_exam_date':
@@ -33,7 +34,19 @@ def convert(root_folder, mode):
                 save_path = nii_root_folder / (rel_path.with_suffix('.nii.gz'))
             else:
                 raise click.ClickException("Invalid mode.")
-            save_nifti(nifti_img, save_path)
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+
+            stdout, stderr = sys.stdout, sys.stderr
+            with open(os.devnull, 'w') as f:
+                sys.stdout = f
+                sys.stderr = f
+                try:
+                    dicom2nifti.dicom_series_to_nifti(folder, save_path)
+                except:
+                    pass
+            sys.stdout = stdout
+            sys.stderr = stderr
+
     click.echo("Transformation completed.")
 
 

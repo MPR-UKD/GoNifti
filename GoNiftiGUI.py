@@ -2,7 +2,10 @@ from pathlib import Path
 import PyQt5.QtWidgets as QtWidgets
 import sys
 import ctypes
+import os
 import PyQt5
+import sys
+import dicom2nifti
 from utils import find_dicom_folders, dicom_to_nifti, save_nifti
 
 
@@ -69,21 +72,26 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
         dicom_folders = find_dicom_folders(root_folder)
         self.progress_bar.setMaximum(len(dicom_folders))
         for i, folder in enumerate(dicom_folders):
-            nifti_img = dicom_to_nifti(folder)
-            if not nifti_img:
-                continue
             if mode == 'save_in_folder':
                 save_path = folder / 'nifti.nii.gz'
             elif mode == 'save_in_exam_date':
                 save_path = folder.with_suffix('.nii.gz')
             elif mode == 'save_in_separate_dir':
-                nii_root = root_folder.parent / (root_folder.name + '_as_nifti')
-                nii_root.mkdir(exist_ok=True)
+                nii_root = root_folder.name + '_as_nifti'
+                nii_root_folder = root_folder.parent / nii_root
+                nii_root_folder.mkdir(exist_ok=True)
                 rel_path = folder.relative_to(root_folder)
-                save_path = nii_root / (rel_path.with_suffix('.nii.gz'))
+                save_path = nii_root_folder / (rel_path.with_suffix('.nii.gz'))
             else:
                 raise IndexError
-            save_nifti(nifti_img, save_path)
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(os.devnull, 'w') as f:
+                sys.stdout = f
+                sys.stderr = f
+                try:
+                    dicom2nifti.dicom_series_to_nifti(folder, save_path)
+                except:
+                    pass
             self.progress_bar.setValue(i + 1)
         ctypes.windll.user32.MessageBoxW(
             0,

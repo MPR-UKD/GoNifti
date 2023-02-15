@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 import dicom2nifti
 
-from utils import find_dicom_folders, dicom_to_nifti, save_nifti
+from .utils import find_dicom_folders, dicom_to_nifti, save_nifti
 import multiprocessing
 
 
@@ -71,7 +71,7 @@ def convert(root_folder: Path, mode: str, n_processes: int = 1) -> None:
 @click.command()
 @click.argument('root_folder', callback=validate_root_folder)
 @click.option('--mode', default='save_in_separate_dir', type=click.Choice(['save_in_separate_dir', 'save_in_folder', 'save_in_exam_date']))
-@click.option('--cpus', default=1, type=click.Choice([str(i+1) for i in range(multiprocessing.cpu_count())]))
+@click.option('--cpus', default='1', type=click.Choice([str(i+1) for i in range(multiprocessing.cpu_count())]))
 def cli(root_folder, mode, cpus):
     convert(root_folder=root_folder, mode=mode, n_processes=int(cpus))
 

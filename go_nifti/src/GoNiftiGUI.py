@@ -4,7 +4,7 @@ import ctypes
 import os
 import sys
 import dicom2nifti
-from go_nifti.src.utils import find_dicom_folders, dicom_to_nifti, save_nifti
+from utils import find_dicom_folders, dicom_to_nifti, save_nifti
 
 
 class GoNiftiGUI(QtWidgets.QMainWindow):

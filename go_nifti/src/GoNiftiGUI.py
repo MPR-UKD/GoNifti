@@ -4,7 +4,7 @@ import ctypes
 import os
 import sys
 import dicom2nifti
-from go_nifti.src.utils import find_dicom_folders
+from go_nifti.src.utils import find_dicom_folders, dicom_to_nifti, save_nifti
 
 
 class GoNiftiGUI(QtWidgets.QMainWindow):
@@ -89,7 +89,8 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
                 try:
                     dicom2nifti.dicom_series_to_nifti(folder, save_path)
                 except:
-                    pass
+                    img = dicom_to_nifti(folder)
+                    save_nifti(img, save_path)
             self.progress_bar.setValue(i + 1)
         ctypes.windll.user32.MessageBoxW(
             0,

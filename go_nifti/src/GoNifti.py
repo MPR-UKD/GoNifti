@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 import dicom2nifti
 
-from go_nifti.src.utils import find_dicom_folders
+from go_nifti.src.utils import find_dicom_folders, dicom_to_nifti, save_nifti
 
 
 def validate_root_folder(ctx, param, value):
@@ -14,7 +14,7 @@ def validate_root_folder(ctx, param, value):
     return Path(value)
 
 
-def convert(root_folder, mode):
+def convert(root_folder: Path, mode: str) -> None:
     dicom_folders = find_dicom_folders(root_folder)
     click.echo(f"Found {len(dicom_folders)} DICOM folders.")
     with click.progressbar(dicom_folders, label="Converting DICOM to NIFTI") as bar:
@@ -40,7 +40,8 @@ def convert(root_folder, mode):
                 try:
                     dicom2nifti.dicom_series_to_nifti(folder, save_path)
                 except:
-                    pass
+                    img = dicom_to_nifti(folder)
+                    save_nifti(img, save_path)
             sys.stdout = stdout
             sys.stderr = stderr
 

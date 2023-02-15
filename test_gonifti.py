@@ -17,4 +17,4 @@ def test_find_dicom_folders(tmp_path):
 
     # call the conversion function with the test directory
     convert(root_folder=root.parent, mode='save_in_separate_dir')
-    assert (root.parent / (root.parent.name + '_as_nifti')).exists()(root.parent.parent / (root.parent.name + '_as_nifti')).exists() == True
+    assert (root.parent.parent / (root.parent.name + '_as_nifti')).exists() == True

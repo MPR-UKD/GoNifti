@@ -50,6 +50,7 @@ Usage: GoNifti.py [OPTIONS] ROOT_FOLDER
 
 Options:
   --mode [save_in_separate_dir|save_in_folder|save_in_exam_date]
+  --cpus [1|2|3|4|5|6|7|8|9|10|11|12]
   --help                          Show this message and exit.
 ```
 
@@ -62,8 +63,13 @@ Transformation completed.
 ```
 
 1. Open a terminal and navigate to the project directory.
-2. Run the CLI script by using the command `python gonifti.py [ROOT_FOLDER] --mode [MODE]`, where `ROOT_FOLDER` is the path to the folder containing the DICOM images to be converted and `MODE` is the desired conversion mode (`save_in_separate_dir`, `save_in_folder`, or `save_in_exam_date`).
+2. Run the CLI script by using the command `pathon gonifti [ROOT_FOLDER] --mode [MODE] --cpus [CPUS]`, where `ROOT_FOLDER` is the path to the folder containing the DICOM images to be converted, `MODE` is the desired conversion mode (save_in_separate_dir, save_in_folder, or save_in_exam_date), and `CPUS` is the number of CPUs to use for the conversion process (default is 1).
 3. After the conversion is complete, a message will be displayed indicating that the transformation is complete.
+
+For example, to convert DICOM images in the folder /path/to/dicom/folder using the save_in_separate_dir conversion mode and 4 CPUs, you would run the following command:
+```bash
+python gonifti.py /path/to/dicom/folder --mode save_in_separate_dir --cpus 4
+```
 
 ## License
 This project is licensed under the GNU 3.0 license and contributions are welcome.

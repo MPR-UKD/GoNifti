@@ -20,4 +20,4 @@ zip -r ./dist/GoNifti.zip ./dist/GoNifti
 
 pyinstaller --hidden-import=PyQt5 --collect-submodules=pydicom go_nifti/src/GoNifti.py --onefile
 
-python python go_nifti/setup.py build
+python go_nifti/setup.py bdist_wheel

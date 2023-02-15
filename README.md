@@ -1,5 +1,6 @@
 [![Actions Status](https://github.com/ludgerradke/GoNifti/actions/workflows/python3.10.yml/badge.svg)](https://github.com/ludgerradke/GoNifti/actions/workflows/python3.10.yml/badge.svg)
 [![Actions Status](https://github.com/ludgerradke/GoNifti/actions/workflows/python3.11.yml/badge.svg)](https://github.com/ludgerradke/GoNifti/actions/workflows/python3.11.yml/badge.svg)
+[![Actions Status](https://github.com/ludgerradke/GoNifti/actions/workflows/python3.12.yml/badge.svg)](https://github.com/ludgerradke/GoNifti/actions/workflows/python3.12.yml/badge.svg)
 
 # GoNifti
 GoNifti is a Python-based tool that allows users to convert DICOM images to Nifti format, either through a graphical user interface (GUI) or a command-line interface (CLI).

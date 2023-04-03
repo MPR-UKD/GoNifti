@@ -26,21 +26,22 @@ def find_dicom_folders(root_folder: Path) -> List[Path]:
         root = Path(root)
         has_dicom_files = False
         for file in files:
-            if file.endswith('.dcm'):
+            if file.endswith(".dcm"):
                 has_dicom_files = True
                 break
         if has_dicom_files:
             dicom_folders.append(root)
     return dicom_folders
 
+
 def dicom_to_nifti(folder: Path, verbose: bool = True) -> Nifti1Image | None:
     # Load all DICOM images in the folder
-    dicom_files = [pydicom.dcmread(str(file)) for file in folder.glob('*.dcm')]
+    dicom_files = [pydicom.dcmread(str(file)) for file in folder.glob("*.dcm")]
 
     if "MIMETypeOfEncapsulatedDocument" in dicom_files[0]:
         return None
 
-    #Sort dicom files based on the image position
+    # Sort dicom files based on the image position
     dicom_files = sort_dicom_files(dicom_files)
 
     # Convert the DICOM images to a 4D Nifti array
@@ -48,7 +49,7 @@ def dicom_to_nifti(folder: Path, verbose: bool = True) -> Nifti1Image | None:
     for idx in range(len(dicom_files[0])):
         image_data.append([d[idx].pixel_array for d in dicom_files])
 
-    image_data = np.array(image_data).transpose((1,2,3,0))
+    image_data = np.array(image_data).transpose((1, 2, 3, 0))
     affine = np.eye(4)
 
     header = nib.Nifti1Header()
@@ -73,3 +74,21 @@ def dicom_to_nifti(folder: Path, verbose: bool = True) -> Nifti1Image | None:
 def save_nifti(nifti_img: nib.Nifti1Image, filename: Path):
     filename.parent.mkdir(parents=True, exist_ok=True)
     nib.save(nifti_img, str(filename))
+
+
+def nifti_change_dtype(nii_path: Path, dtype: str) -> None:
+    assert dtype in ["int32", "float32", "float64"]
+    nii = nib.load(nii_path)
+    nii_new = nib.Nifti1Image(nii.get_fdata().astype(dtype), nii.affine, nii.header)
+    if dtype == "int32":
+        key_nr = 8
+    elif dtype == "float32":
+        key_nr = 16
+    elif dtype == "float64":
+        key_nr = 64
+    else:
+        raise IndexError
+    nii_new.set_data_dtype(
+        key_nr
+    )  # https://brainder.org/2012/09/23/the-nifti-file-format/
+    save_nifti(nii_new, nii_path)

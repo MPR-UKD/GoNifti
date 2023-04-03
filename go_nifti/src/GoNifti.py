@@ -6,6 +6,7 @@ import click
 import dicom2nifti
 
 from .utils import find_dicom_folders, dicom_to_nifti, save_nifti
+from .utils import nifti_change_dtype
 import multiprocessing
 
 
@@ -15,12 +16,14 @@ def validate_root_folder(ctx, param, value):
     return Path(value)
 
 
-def convert_dicom_to_nifti(folder: Path, save_path: Path) -> None:
+def convert_dicom_to_nifti(
+    folder: Path, save_path: Path, out_dtype: str | None = None
+) -> None:
     """
     Function to convert a DICOM folder to NIFTI format
     """
     stdout, stderr = sys.stdout, sys.stderr
-    with open(os.devnull, 'w') as f:
+    with open(os.devnull, "w") as f:
         sys.stdout = f
         sys.stderr = f
         try:
@@ -28,11 +31,15 @@ def convert_dicom_to_nifti(folder: Path, save_path: Path) -> None:
         except:
             img = dicom_to_nifti(folder)
             save_nifti(img, save_path)
+        if out_dtype is not None:
+            nifti_change_dtype(nii_path=save_path, dtype=out_dtype)
     sys.stdout = stdout
     sys.stderr = stderr
 
 
-def convert(root_folder: Path, mode: str, n_processes: int = 1) -> None:
+def convert(
+    root_folder: Path, mode: str, n_processes: int = 1, out_dtype: str | None = None
+) -> None:
     dicom_folders = find_dicom_folders(root_folder)
     click.echo(f"Found {len(dicom_folders)} DICOM folders.")
 
@@ -42,21 +49,23 @@ def convert(root_folder: Path, mode: str, n_processes: int = 1) -> None:
         total = len(dicom_folders)
         with click.progressbar(length=total, label="Converting DICOM to NIFTI") as bar:
             for folder in dicom_folders:
-                if mode == 'save_in_folder':
-                    save_path = folder / 'nifti.nii.gz'
-                elif mode == 'save_in_exam_date':
-                    save_path = folder.with_suffix('.nii.gz')
-                elif mode == 'save_in_separate_dir':
-                    nii_root = root_folder.name + '_as_nifti'
+                if mode == "save_in_folder":
+                    save_path = folder / "nifti.nii.gz"
+                elif mode == "save_in_exam_date":
+                    save_path = folder.with_suffix(".nii.gz")
+                elif mode == "save_in_separate_dir":
+                    nii_root = root_folder.name + "_as_nifti"
                     nii_root_folder = root_folder.parent / nii_root
                     nii_root_folder.mkdir(exist_ok=True)
                     rel_path = folder.relative_to(root_folder)
-                    save_path = nii_root_folder / (rel_path.with_suffix('.nii.gz'))
+                    save_path = nii_root_folder / (rel_path.with_suffix(".nii.gz"))
                 else:
                     raise click.ClickException("Invalid mode.")
                 save_path.parent.mkdir(parents=True, exist_ok=True)
 
-                result = pool.apply_async(convert_dicom_to_nifti, args=(folder, save_path))
+                result = pool.apply_async(
+                    convert_dicom_to_nifti, args=(folder, save_path, out_dtype)
+                )
                 results.append(result)
 
             # Monitor progress
@@ -69,11 +78,25 @@ def convert(root_folder: Path, mode: str, n_processes: int = 1) -> None:
 
 
 @click.command()
-@click.argument('root_folder', callback=validate_root_folder)
-@click.option('--mode', default='save_in_separate_dir', type=click.Choice(['save_in_separate_dir', 'save_in_folder', 'save_in_exam_date']))
-@click.option('--cpus', default='1', type=click.Choice([str(i+1) for i in range(multiprocessing.cpu_count())]))
-def cli(root_folder, mode, cpus):
-    convert(root_folder=root_folder, mode=mode, n_processes=int(cpus))
+@click.argument("root_folder", callback=validate_root_folder)
+@click.option(
+    "--mode",
+    default="save_in_separate_dir",
+    type=click.Choice(["save_in_separate_dir", "save_in_folder", "save_in_exam_date"]),
+)
+@click.option(
+    "--cpus",
+    default="1",
+    type=click.Choice([str(i + 1) for i in range(multiprocessing.cpu_count())]),
+)
+@click.option(
+    "--out_dtype", default=None, type=click.Choice(["int32", "float32", "float64"])
+)
+def cli(root_folder, mode, cpus, out_dtype):
+    convert(
+        root_folder=root_folder, mode=mode, n_processes=int(cpus), out_dtype=out_dtype
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

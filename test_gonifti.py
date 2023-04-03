@@ -16,5 +16,5 @@ def test_find_dicom_folders(tmp_path):
         shutil.copy(dcm_file, root / Path(dcm_file).name)
 
     # call the conversion function with the test directory
-    convert(root_folder=root.parent, mode='save_in_separate_dir')
-    assert (root.parent.parent / (root.parent.name + '_as_nifti')).exists() == True
+    convert(root_folder=root.parent, mode="save_in_separate_dir")
+    assert (root.parent.parent / (root.parent.name + "_as_nifti")).exists() == True

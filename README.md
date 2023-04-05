@@ -52,6 +52,7 @@ Usage: GoNifti.py [OPTIONS] ROOT_FOLDER
 Options:
   --mode [save_in_separate_dir|save_in_folder|save_in_exam_date]
   --cpus [1|2|3|4|5|6|7|8|9|10|11|12]
+  --out_dtype [int32|float32|float64]
   --help                          Show this message and exit.
 ```
 

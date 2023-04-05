@@ -55,7 +55,7 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
 
         author = QtWidgets.QLabel()
         author.setText(
-            "Author: Karl Ludger Radke (Version 0.1) \n"
+            "Author: Karl Ludger Radke (Version 0.2) \n"
             "last update: 12/02/2023 \n"
             "ludger.radke@med.uni-duesseldorf.de"
         )

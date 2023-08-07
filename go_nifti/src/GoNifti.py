@@ -38,7 +38,11 @@ def convert_dicom_to_nifti(
 
 
 def convert(
-    root_folder: Path, mode: str, n_processes: int = 1, out_dtype: str | None = None
+    root_folder: Path,
+    mode: str,
+    n_processes: int = 1,
+    out_dtype: str | None = None,
+    compress: bool = False,
 ) -> None:
     dicom_folders = find_dicom_folders(root_folder)
     click.echo(f"Found {len(dicom_folders)} DICOM folders.")
@@ -47,18 +51,19 @@ def convert(
         results = []
         count = 0
         total = len(dicom_folders)
+        suffix = ".nii.gz" if compress else ".nii"
         with click.progressbar(length=total, label="Converting DICOM to NIFTI") as bar:
             for folder in dicom_folders:
                 if mode == "save_in_folder":
-                    save_path = folder / "nifti.nii.gz"
+                    save_path = folder / f"nifti{suffix}"
                 elif mode == "save_in_exam_date":
-                    save_path = folder.with_suffix(".nii.gz")
+                    save_path = folder.with_suffix(suffix)
                 elif mode == "save_in_separate_dir":
                     nii_root = root_folder.name + "_as_nifti"
                     nii_root_folder = root_folder.parent / nii_root
                     nii_root_folder.mkdir(exist_ok=True)
                     rel_path = folder.relative_to(root_folder)
-                    save_path = nii_root_folder / (rel_path.with_suffix(".nii.gz"))
+                    save_path = nii_root_folder / (rel_path.with_suffix(suffix))
                 else:
                     raise click.ClickException("Invalid mode.")
                 save_path.parent.mkdir(parents=True, exist_ok=True)
@@ -95,6 +100,17 @@ def convert(
 def cli(root_folder, mode, cpus, out_dtype):
     convert(
         root_folder=root_folder, mode=mode, n_processes=int(cpus), out_dtype=out_dtype
+    )
+
+
+@click.option("--compress", default=True, type=click.Choice([True, False]))
+def cli(root_folder, mode, cpus, out_dtype, compress):
+    convert(
+        root_folder=root_folder,
+        mode=mode,
+        n_processes=int(cpus),
+        out_dtype=out_dtype,
+        compress=compress,
     )
 
 

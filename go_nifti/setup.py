@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="GoNifti",
-    version="0.2",
+    version="0.3",
     packages=["go_nifti/src"],
     install_requires=[
         "click",

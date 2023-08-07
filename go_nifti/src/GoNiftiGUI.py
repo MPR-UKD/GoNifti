@@ -27,7 +27,18 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
 
         self.out_dtype_label = QtWidgets.QLabel("Change dtype to:")
         self.out_dtype_combo = QtWidgets.QComboBox()
-        self.out_dtype_combo.addItems(["Unchanged", "int32", "float32", "float64"])
+        self.out_dtype_combo.addItems(
+            [
+                "Unchanged - nii.gz",
+                "int32 - nii.gz",
+                "float32 - nii.gz",
+                "float64 - nii.gz",
+                "Unchanged - nii",
+                "int32 - nii",
+                "float32 - nii",
+                "float64 - nii",
+            ]
+        )
 
         self.progress_bar = QtWidgets.QProgressBar()
 
@@ -55,7 +66,7 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
 
         author = QtWidgets.QLabel()
         author.setText(
-            "Author: Karl Ludger Radke (Version 0.2) \n"
+            "Author: Karl Ludger Radke (Version 0.3) \n"
             "last update: 12/02/2023 \n"
             "ludger.radke@med.uni-duesseldorf.de"
         )
@@ -80,22 +91,39 @@ class GoNiftiGUI(QtWidgets.QMainWindow):
     def convert(self):
         root_folder = Path(self.root_folder_edit.text())
         mode = self.mode_combo.currentText()
-        out_dtype = self.out_dtype_combo.currentText()
-        if out_dtype == "Unchanges":
+        nifti_format = self.out_dtype_combo.currentText()
+        if "Unchanged" in nifti_format:
             out_dtype = None
+        if "int32" in nifti_format:
+            out_dtype = "int32"
+        if "float32" in nifti_format:
+            out_dtype = "float32"
+        if "float64" in nifti_format:
+            out_dtype = "float64"
+
+        compress = True if "nii.gz" in nifti_format else False
+
         dicom_folders = find_dicom_folders(root_folder)
         self.progress_bar.setMaximum(len(dicom_folders))
         for i, folder in enumerate(dicom_folders):
             if mode == "save_in_folder":
-                save_path = folder / "nifti.nii.gz"
+                save_path = folder / ("nifti.nii.gz" if compress else "nifti.nii")
             elif mode == "save_in_exam_date":
-                save_path = folder.with_suffix(".nii.gz")
+                save_path = (
+                    folder.with_suffix(".nii.gz")
+                    if compress
+                    else folder.with_suffix(".nii")
+                )
             elif mode == "save_in_separate_dir":
                 nii_root = root_folder.name + "_as_nifti"
                 nii_root_folder = root_folder.parent / nii_root
                 nii_root_folder.mkdir(exist_ok=True)
                 rel_path = folder.relative_to(root_folder)
-                save_path = nii_root_folder / (rel_path.with_suffix(".nii.gz"))
+                save_path = nii_root_folder / (
+                    rel_path.with_suffix(".nii.gz")
+                    if compress
+                    else rel_path.with_suffix(".nii")
+                )
             else:
                 raise IndexError
             save_path.parent.mkdir(parents=True, exist_ok=True)
